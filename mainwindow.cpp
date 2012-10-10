@@ -27,12 +27,12 @@ MainWindow::MainWindow(QWidget *parent) :
 
     QHBoxLayout *SettingLayout = new QHBoxLayout();
     QLabel *fileLabel = new QLabel(
-    QApplication::translate("nestedlayouts", "File Name:"), this);
+    QApplication::translate("AndroidLogTool", "File Name:"), this);
     mFileEdit = new QLineEdit(this);
     QPushButton * fileButton = new QPushButton("Select", this);
 
     QLabel *formatLabel = new QLabel(
-                QApplication::translate("nestedlayouts", "Log Format:"), this);
+                QApplication::translate("AndroidLogTool", "Log Format:"), this);
 
     mformatCombox = new QComboBox(this);
     QStringList format;
@@ -51,7 +51,7 @@ MainWindow::MainWindow(QWidget *parent) :
     QHBoxLayout *queryLayout = new QHBoxLayout();
 
     QLabel *queryLabel = new QLabel(
-    QApplication::translate("nestedlayouts", "Query:"), this);
+    QApplication::translate("AndroidLogTool", "Query:"), this);
 
     mQueryEdit = new QLineEdit(this);
     QPushButton *findButton = new QPushButton("Find", this);
@@ -88,7 +88,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
     connect(mSortCombox, SIGNAL(currentIndexChanged(int)), this, SLOT(currentIndexChanged(int)));
     setWindowTitle(
-        QApplication::translate("nestedlayouts", "Nested layouts"));
+        QApplication::translate("AndroidLogTool", "Android Log Tool"));
     setLayout(mainLayout);
 
     // Set up the model and configure the view..

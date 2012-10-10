@@ -81,6 +81,7 @@ public:
     virtual void parse(QList<CustomizeItem *>&, const QString&);
     const QStringList& tags() { return mTags; };
     const QStringList& headers() { return mHeaders; };
+
 protected:
     QString mCmd;
     QVector<int> mFields;
@@ -96,7 +97,9 @@ class ThreadTime : public LogInfo
 public:
     ThreadTime(const QString&);
     virtual ~ThreadTime(){}
-    void parse(QList<CustomizeItem *>&, const QString&);
+    virtual void parse(QList<CustomizeItem *>&, const QString&);
+    void buildItems(QList<CustomizeItem *>& items, QList<QStringList>& rows);
+    void parseFile(const QString& filename, QList<QStringList>& rows);
 
 };
 

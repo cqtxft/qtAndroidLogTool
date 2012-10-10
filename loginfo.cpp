@@ -141,111 +141,72 @@ ThreadTime::ThreadTime(const QString& format) : LogInfo(format) {
     }
 }
 
-/*
-LogInfo::LogInfo(const QString& format){
+void ThreadTime::buildItems(QList<CustomizeItem *>& items, QList<QStringList>& rows) {
 
-    //parseCmdline(cmd);
-    setFormatFromString(format);
-
-    switch(mFormat) {
-        case FORMAT_TIME:
-            mFields.clear();
-            //mFields.append();
-            break;
-        case FORMAT_THREADTIME:
-        {
-            mFields.clear();
-            mFields.append(TYPE_DATE);
-            mFields.append(TYPE_TIME);
-            mFields.append(TYPE_PID);
-            mFields.append(TYPE_TID);
-            mFields.append(TYPE_PRI);
-            mFields.append(TYPE_TAG);
-            mFields.append(TYPE_MESSAGE);
-
-
-            mHeaders.clear();
-            for (int i=0; i<mFields.count(); i++) {
-                mHeaders.append(fieldName(mFields.at(i)));
-            }
-
-            break;
-        }
-        default:
-            break;
-    }
-}*/
-
-void ThreadTime::parse(QList<CustomizeItem *>& items, const QString& filename) {
-    char buf[1024];
-    switch(mFormat) {
-        case FORMAT_THREADTIME:
-        {
-            QFile file(filename);
-            if (file.open(QFile::ReadOnly)) {
-
-                QList<QStringList> rows = QList<QStringList>();
-                AndroidLogEntry* entry = new AndroidLogEntry;
-                while (!file.atEnd()) {
-
-                    qint64 lineLength = file.readLine(buf, sizeof(buf));
-                    if (lineLength != -1) {
-
-                        char timeBuf[32] = {0};
-                        char c;//remove the "."
-                        // sscanf's usage is different between qt & android, so I can not directly use the
-                        // format in android log module.
-                        int ret = 0;
-                        if (lineLength != -1)
-                           ret = sscanf(buf, "%[^.] %c %03ld %5d %5d %c %[^:]", timeBuf, &c , &(entry->tv_nsec),
-                                                               &(entry->pid), &(entry->tid), &(entry->priChar), &(entry->tag));
-                        if ((ret != 0) && (ret != 7))
-                            continue;
-
-                        QStringList tmp = QString(timeBuf).split(' ', QString::SkipEmptyParts);//get date & time;
-
-                        //tmp.at(1) += QString("%1").arg(entry->tv_nsec);
-                        tmp.append(QString("%1").arg(entry->pid));
-                        tmp.append(QString("%1").arg(entry->tid));
-                        tmp.append(QString(entry->priChar));
-                        tmp.append(QString(entry->tag));
-
-                        // the true log message
-                        QString line(buf);
-                        int pos = line.indexOf(entry->tag) + strlen(entry->tag) + 1;
-                        tmp.append(line.mid(pos));
-                        rows.append(tmp);
-                    }
+    int tagPos = fieldPos(TYPE_TAG);
+    foreach (QStringList row, rows) {
+        int i = 0;
+        foreach (QString text, row) {
+            CustomizeItem* item = new CustomizeItem(text);
+            // extract tag
+            if(i++ == tagPos){
+                int index = mTags.indexOf(text);
+                if (-1 == index) { // new tag
+                    mTags.append(text);
+                    index = mTags.count() - 1;
                 }
-
-            // extract all tags
-                int tagPos = fieldPos(TYPE_TAG);
-                foreach (QStringList row, rows) {
-                    int i = 0;
-                    foreach (QString text, row) {
-                        CustomizeItem* item = new CustomizeItem(text);
-                        if(i++ == tagPos){
-                            int index = mTags.indexOf(text);
-                            if (-1 == index) {
-                                mTags.append(text);
-                                index = mTags.count() - 1;
-                            }
-                            item->setTagIndex(index);
-                        }
-                        items.append(item);
-                    }
-
-
-                }
+                item->setTagIndex(index);
             }
+            items.append(item);
         }
-        default:
-            break;
     }
 }
 
-/*
- this method is another attempt to parse the file if we do not use the sscanf in qt.
+void ThreadTime::parseFile(const QString& filename, QList<QStringList>& rows) {
+    QFile file(filename);
+    char buf[1024];
+    if (file.open(QFile::ReadOnly)) {
+        AndroidLogEntry* entry = new AndroidLogEntry;
+        while (!file.atEnd()) {
+            qint64 lineLength = file.readLine(buf, sizeof(buf));
+            if (lineLength != -1) {
+                char timeBuf[32] = {0};
+                char c;//remove the "."
+                // sscanf's usage is different between qt & android, so I can not directly use the
+                // format in android log module.
+                int ret = sscanf(buf, "%[^.] %c %03ld %5d %5d %c %[^:]", timeBuf, &c , &(entry->tv_nsec),
+                                                               &(entry->pid), &(entry->tid), &(entry->priChar), &(entry->tag));
+                if ((ret != 0) && (ret != 7)) // wrong format line ignore this line.
+                    continue;
+
+                QStringList tmp = QString(timeBuf).split(' ', QString::SkipEmptyParts);//get date & time;
+
+                //tmp.at(1) += QString("%1").arg(entry->tv_nsec);
+                tmp.append(QString("%1").arg(entry->pid));
+                tmp.append(QString("%1").arg(entry->tid));
+                tmp.append(QString(entry->priChar));
+                tmp.append(QString(entry->tag));
+
+                    // the true log message
+                QString line(buf);
+                int pos = line.indexOf(entry->tag) + strlen(entry->tag) + 1;
+                tmp.append(line.mid(pos));
+                rows.append(tmp);
+            }
+        }
+    }
+}
+
+void ThreadTime::parse(QList<CustomizeItem *>& items, const QString& filename) {
+
+    QList<QStringList> rows = QList<QStringList>();
+    parseFile(filename, rows);
+    buildItems(items, rows);
+
+}
+
+/**
+ This method is another attempt to parse the file if we do not use the sscanf in qt.
  */
 void LogInfo::parse(QList<CustomizeItem *>& items, const QString& filename) {
     char buf[1024];
@@ -296,6 +257,7 @@ void LogInfo::parse(QList<CustomizeItem *>& items, const QString& filename) {
                 }
             }
         }
+        break;
         default:
             break;
     }

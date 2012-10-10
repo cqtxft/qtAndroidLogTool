@@ -12,6 +12,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 #ifndef DataModel_H
 #define DataModel_H
 #include <QVector>
@@ -19,8 +20,6 @@
 #include <QStandardItemModel>
 #include "loginfo.h"
 #include "customizeitem.h"
-
-
 
 class DataModel : public QStandardItemModel
 {

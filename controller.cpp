@@ -1,6 +1,5 @@
 /*
- * Copyright (C) 2007 The Android Open Source Project
- *
+ * Copyright (C) 2012  cqtxft@gmail.com
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -33,14 +32,15 @@ Controller::~Controller()
 DateControl::DateControl(QWidget* parent, QHBoxLayout* layout) :
     Controller(parent, layout)
 {
-    mDateLabel = new QLabel("Date");
-    mDateEdit  = new QLineEdit;
+    mDateLabel = new QLabel("Date", this);
+    mDateEdit  = new QLineEdit(this);
 }
 
 DateControl::~DateControl() {
 }
 
 void DateControl::show() {
+
     mLayout->addWidget(mDateLabel);
     mLayout->addWidget(mDateEdit);
     mDateLabel->show();
@@ -48,6 +48,7 @@ void DateControl::show() {
 }
 
 void DateControl::hide() {
+
     mLayout->removeWidget(mDateLabel);
     mLayout->removeWidget(mDateEdit);
     mDateLabel->hide();
@@ -62,16 +63,17 @@ void DateControl::filter() {
 TimeControl::TimeControl(QWidget* parent, QHBoxLayout* layout) :
     Controller(parent, layout)
 {
-    mStartTimeLabel = new QLabel("start time");
-    mStartTimeEdit  = new QLineEdit;
-    mEndTimeLabel = new QLabel("end time");
-    mEndTimeEdit  = new QLineEdit;
+    mStartTimeLabel = new QLabel("start time", this);
+    mStartTimeEdit  = new QLineEdit(this);
+    mEndTimeLabel = new QLabel("end time", this);
+    mEndTimeEdit  = new QLineEdit(this);
 }
 
 TimeControl::~TimeControl() {
 }
 
 void TimeControl::show() {
+
     mLayout->addWidget(mStartTimeLabel);
     mLayout->addWidget(mStartTimeEdit);
     mLayout->addWidget(mEndTimeLabel);
@@ -101,19 +103,13 @@ void TimeControl::filter() {
 PidsControl::PidsControl(QWidget* parent, QHBoxLayout* layout) :
     Controller(parent, layout)
 {
-    mPidsLabel = new QLabel("Pids");;
-    mPidsEdit  = new QLineEdit;
-    mSelectPidsButton = new QPushButton("Select");
+    mPidsLabel = new QLabel("Pids", this);;
+    mPidsEdit  = new QLineEdit(this);
+    mSelectPidsButton = new QPushButton("Select", this);
 }
 
 PidsControl::~PidsControl()
 {
-    delete mPidsLabel;
-    delete mPidsEdit;
-    delete mSelectPidsButton;
-    mPidsLabel = NULL;
-    mPidsEdit = NULL;
-    mSelectPidsButton = NULL;
 }
 
 void PidsControl::show() {
@@ -151,16 +147,17 @@ void PidsControl::filter() {
 TidsControl::TidsControl(QWidget* parent, QHBoxLayout* layout) :
     Controller(parent, layout)
 {
-    mTidsLabel = new QLabel("Tids");//, this);
-    mTidsEdit  = new QLineEdit;
-    mSelectTidsButton = new QPushButton("Select");//, this);
+    mTidsLabel = new QLabel("Tids", this);
+    mTidsEdit  = new QLineEdit(this);
+    mSelectTidsButton = new QPushButton("Select", this);
 }
 
 TidsControl::~TidsControl()
 {
 }
 
-void TidsControl::show(){
+void TidsControl::show() {
+
     mLayout->addWidget(mTidsLabel);
     mLayout->addWidget(mTidsEdit);
     mLayout->addWidget(mSelectTidsButton);
@@ -195,9 +192,9 @@ void TidsControl::filter(){
 PriControl::PriControl(QWidget* parent, QHBoxLayout* layout) :
     Controller(parent, layout)
 {
-    mPriLabel  = new QLabel("Priority");
-    mPriEdit   = new QLineEdit;
-    mPriCombox = new QComboBox;
+    mPriLabel  = new QLabel("Priority", this);
+    mPriEdit   = new QLineEdit(this);
+    mPriCombox = new QComboBox(this);
     QStringList pris;
     pris << "E" << "W" << "I" << "D" << "V";
     mPriCombox->addItems(pris);
@@ -249,10 +246,10 @@ void PriControl::priIndexChanged(int index) {
 TagControl::TagControl(QWidget* parent, QHBoxLayout* layout) :
     Controller(parent, layout)
 {
-    mTagLabel  = new QLabel("TAG");
-    mTagCombox = new QComboBox;
-    mTagsLabel = new QLabel("TAG:");
-    mTagsEdit  = new QLineEdit;
+    mTagLabel  = new QLabel("TAG", this);
+    mTagCombox = new QComboBox(this);
+    mTagsLabel = new QLabel("TAG:", this);
+    mTagsEdit  = new QLineEdit(this);
     connect(mTagCombox, SIGNAL(currentIndexChanged(int)), this, SLOT(TagIndexChanged(int)));
 }
 
@@ -261,6 +258,7 @@ TagControl::~TagControl()
 }
 
 void TagControl::show() {
+
     mLayout->addWidget(mTagLabel);
     mLayout->addWidget(mTagCombox);
     mLayout->addWidget(mTagsLabel);
@@ -273,6 +271,7 @@ void TagControl::show() {
 }
 
 void TagControl::hide() {
+
     mLayout->removeWidget(mTagLabel);
     mLayout->removeWidget(mTagCombox);
     mLayout->removeWidget(mTagsEdit);
@@ -288,19 +287,8 @@ void TagControl::setTags(const QStringList& tags) {
     mTagCombox->addItems(tags);
 }
 
-/*
-TYPE_OFF = 0,
-TYPE_DATE,
-TYPE_TIME,
-TYPE_DATETIME,
-TYPE_PID,
-TYPE_TID,
-TYPE_PRI,
-TYPE_TAG,
-TYPE_DATA,
-TYPE_MAX = 1000
-*/
-void TagControl::filter(){
+void TagControl::filter() {
+
     QString tags = mTagsEdit->text();
     QStringList tagsList = tags.split(Separator);
     QString pattern;
@@ -321,8 +309,8 @@ void TagControl::TagIndexChanged(int index) {
 LogControl::LogControl(QWidget* parent, QHBoxLayout* layout) :
     Controller(parent, layout)
 {
-    mLogLabel  = new QLabel;
-    mLogEdit  = new QLineEdit;
+    mLogLabel  = new QLabel("Log", this);
+    mLogEdit  = new QLineEdit(this);
 }
 
 LogControl::~LogControl()
